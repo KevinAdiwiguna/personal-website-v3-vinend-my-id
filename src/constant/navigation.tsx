@@ -10,22 +10,22 @@ interface NavigationProps {
 export const NAVIGATION: NavigationProps[] = [
   {
     icon: <FaHome />,
-    url: "#",
+    url: "/#",
     tooltip: "Home"
   },
   {
     icon: <FaBriefcase />,
-    url: "#experience",
+    url: "/#experience",
     tooltip: "Experience",
   },
   {
     icon: <FaLayerGroup />,
-    url: "#stacks",
+    url: "/#stacks",
     tooltip: "Stacks",
   },
   {
     icon: <FaCog />,
-    url: "#services",
+    url: "/#services",
     tooltip: "Services",
   },
   {

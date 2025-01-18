@@ -87,7 +87,6 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
         },
       },
     });
-    console.log(getBlog)
     return getBlog || []
   } catch (error) {
     console.log(error)
@@ -220,3 +219,59 @@ export const CreateBlog = async (formData: FormData) => {
     redirect("/dashboard/blogs");
   }
 };
+
+export const GetBlogByID = async (id: string) => {
+  try {
+    const getBlog = await db.blog.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        description: true,
+        content: true,
+        images: true,
+        updatedAt: true,
+        viewCount: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                tag: true,
+              },
+            },
+          },
+        },
+        technologies: {
+          select: {
+            technology: {
+              select: {
+                id: true,
+                tech: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!getBlog) {
+      redirect("/404");
+    }
+
+    return getBlog;
+  } catch (error) {
+    console.error("Error fetching blog:", error);
+    throw new Error(`Failed to fetch blog: ${error}`);
+  }
+}

@@ -119,7 +119,7 @@ export default function Editor({ setContent, editable }: EditorProps) {
   return (
     <BlockNoteView
       theme={"dark"}
-      editor={editor} slashMenu={false} onChange={() => setContent(editor?.document)} editable={editable}>
+      editor={editor} slashMenu={false} onChange={async () => setContent(await editor.blocksToFullHTML(editor.document))} editable={editable}>
       <SuggestionMenuController
         triggerCharacter={"/"}
         getItems={async (query) =>
