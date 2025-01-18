@@ -9,6 +9,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { CreateBlog } from '@/actions/blogs-action';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import { useFormStatus } from 'react-dom';
 
 interface getTagProps {
   id: number;
@@ -59,6 +60,7 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
     setSelectedTech(selectedTech.filter((tech) => tech.id !== id));
   };
 
+  const { pending } = useFormStatus();
   const handleSubmit = () => {
     const formData = new FormData();
     if (image) formData.append("images", image); // Masukkan file gambar dari state
@@ -198,7 +200,7 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
 
       <ActionButton
         type="submit"
-        disabled={title == "" || description == "" || content == "" || !image}
+        disabled={title == "" || description == "" || content == "" || !image || pending}
         className="bg-blue-500 hover:bg-blue-700 py-2 w-full"
         onClick={handleSubmit} // Panggil handleSubmit saat klik
       >
