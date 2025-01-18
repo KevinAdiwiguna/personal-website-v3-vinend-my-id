@@ -49,17 +49,19 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
       </div>
 
-      {getBlogById.tags.length > 0 && getBlogById.tags.map((tag) => {
-        return (
-          <div
-            key={tag.tag?.id}
-            className="px-2.5 py-1 rounded-full font-mono text-base dark:bg-neutral-700/50 dark:text-neutral-400 text-white bg-neutral-900/50 w-fit">
-            <span className="font-semibold mr-1">#</span>
-            {tag?.tag?.tag}
-          </div>
-        )
-      }
-      )}
+      <div className='flex max-w-lg gap-x-4 gap-y-2'>
+        {getBlogById.tags.length > 0 && getBlogById.tags.map((tag) => {
+          return (
+            <div
+              key={tag.tag?.id}
+              className="px-2.5 py-1 rounded-full font-mono text-base dark:bg-neutral-700/50 dark:text-neutral-400 text-white bg-neutral-900/50 w-fit">
+              <span className="font-semibold mr-1">#</span>
+              {tag?.tag?.tag}
+            </div>
+          )
+        }
+        )}
+      </div>
     </div>
   )
 }
