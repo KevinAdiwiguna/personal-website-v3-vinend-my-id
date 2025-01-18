@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	@apply !bg-neutral-100 dark:!bg-neutral-900 text-black dark:text-white;
+}
+
+.navigation-button {
+	@apply duration-300 border border-neutral-800 py-2 dark:text-white dark:hover:text-black dark:hover:bg-white text-neutral-900 hover:bg-neutral-800 hover:text-white;
+}
+
+.basic-hover {
+	@apply dark:bg-black dark:hover:bg-neutral-800 duration-300 bg-neutral-200 hover:bg-neutral-400 hover:text-white;
+}
+
+.basic-description-color {
+	@apply text-neutral-700 dark:text-neutral-300;
+}
+
+.basic-link {
+	@apply underline text-neutral-900 dark:text-neutral-300 hover:text-blue-500;
+}
+
+.card-hover {
+	@apply dark:bg-[#19191A] dark:hover:bg-neutral-800 hover:bg-neutral-200;
+}

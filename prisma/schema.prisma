@@ -1,0 +1,137 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  role          String    @default("user")
+
+  deletedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Blog      Blog[]
+  Project   Project[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Blog {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  title       String
+  description String   @unique
+  content     String?
+  images      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  viewCount   Int
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags         TagRelation[]
+  technologies TechnologyRelation[]
+}
+
+model Project {
+  id           Int                  @id @default(autoincrement())
+  title        String
+  userId       String
+  description  String
+  thumbnail    String
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  viewCount    Int
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags         TagRelation[]
+  technologies TechnologyRelation[]
+}
+
+model Technology {
+  id     Int    @id @default(autoincrement())
+  tech   String
+  images String
+
+  deletedAt DateTime?
+
+  relations TechnologyRelation[]
+}
+
+model Tag {
+  id  Int    @id @default(autoincrement())
+  tag String
+
+  deletedAt DateTime?
+
+  relations TagRelation[]
+}
+
+model TagRelation {
+  id        Int @id @default(autoincrement())
+  tagId     Int
+  blogId    Int?
+  projectId Int?
+
+  blog    Blog?    @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag     Tag?     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, blogId, projectId])
+  @@index([tagId])
+  @@index([blogId])
+  @@index([projectId])
+}
+
+model TechnologyRelation {
+  id        Int @id @default(autoincrement())
+  techId    Int
+  blogId    Int?
+  projectId Int?
+
+  blog       Blog?       @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  project    Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology Technology? @relation(fields: [techId], references: [id], onDelete: Cascade)
+
+  @@unique([techId, blogId, projectId])
+  @@index([techId])
+  @@index([blogId])
+  @@index([projectId])
+}
