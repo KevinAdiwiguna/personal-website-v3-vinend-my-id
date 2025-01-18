@@ -91,6 +91,12 @@ const insertMagicAi = (editor: typeof schema.BlockNoteEditor) => ({
 export default function Editor({ setContent, editable }: EditorProps) {
   const editor = useCreateBlockNote({
     schema,
+
+    domAttributes: {
+      editor: {
+        class: "h-screen",
+      }
+    },
     initialContent: [
       {
         type: "paragraph",
