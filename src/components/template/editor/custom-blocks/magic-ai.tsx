@@ -12,7 +12,6 @@ export const MagicAi = createReactBlockSpec(
   },
   {
     render: (props) => {
-      console.log(props);
       return (
         <div>
 

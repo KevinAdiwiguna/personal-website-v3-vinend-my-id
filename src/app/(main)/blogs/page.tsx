@@ -17,7 +17,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
   const defaultQuery = query || ''
   const defaultPages = parseInt(page || '1')
 
-  const totalCount = await GetBlogsByCount(defaultQuery)
+  // const totalCount = await GetBlogsByCount(defaultQuery)
 
   const getAllBlogs = await GetAllBlogs({ query: defaultQuery, page: defaultPages })
   return (

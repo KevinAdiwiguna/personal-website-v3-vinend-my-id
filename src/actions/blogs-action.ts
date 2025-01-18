@@ -89,8 +89,7 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
     });
     return getBlog || []
   } catch (error) {
-    console.log(error)
-    throw new Error("Failed to fetch blog data");
+    throw new Error(`Failed to fetch blog data ${error}`);
   }
 };
 
@@ -113,7 +112,6 @@ export const GetBlogsByCount = async (query: string) => {
 }
 
 export const CreateBlog = async (formData: FormData) => {
-  console.log(await formData.get("images"));
 
   // Autentikasi pengguna
   const session = await auth();
@@ -222,6 +220,16 @@ export const CreateBlog = async (formData: FormData) => {
 
 export const GetBlogByID = async (id: string) => {
   try {
+    await db.blog.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
+    });
     const getBlog = await db.blog.findUnique({
       where: {
         id: parseInt(id),

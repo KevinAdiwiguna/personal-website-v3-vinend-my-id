@@ -9,7 +9,6 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id
   const getBlogById = await GetBlogByID(id.toString())
 
-  console.log(getBlogById)
   return (
     <div>
       <Breadcrumb />
