@@ -7,7 +7,7 @@ export const useChangeTheme = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const theme = localStorage?.getItem("theme");
+      const theme = localStorage.getItem("theme");
       if (!theme) {
         localStorage.setItem("theme", "dark");
         document.documentElement.classList.add("dark");
@@ -33,8 +33,5 @@ export const useChangeTheme = () => {
     }
   };
 
-  return {
-    toggleTheme,
-    isDark,
-  };
+  return { toggleTheme, isDark };
 };
