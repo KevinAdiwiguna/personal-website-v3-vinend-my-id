@@ -76,8 +76,6 @@ export const ProjectCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; 
       formData.append("tech", String(tech.id));
     });
 
-    for (const pair of formData.entries()) {
-    }
 
     CreateProject(formData)
   };

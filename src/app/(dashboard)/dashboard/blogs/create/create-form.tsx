@@ -76,8 +76,6 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
       formData.append("tech", String(tech.id));
     });
 
-    for (const pair of formData.entries()) {
-    }
 
     CreateBlog(formData)
   };

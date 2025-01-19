@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { GetAllBlogs, GetBlogsByCount } from '@/actions/blogs-action'
+import { GetAllBlogs } from '@/actions/blogs-action'
 import Image from 'next/image'
 import { formatDate } from '@/lib/format-date'
 import { ActionButton } from '@/components/atoms/button'
