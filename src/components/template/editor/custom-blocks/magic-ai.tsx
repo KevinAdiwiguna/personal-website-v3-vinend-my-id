@@ -11,7 +11,7 @@ export const MagicAi = createReactBlockSpec(
     content: "inline",
   },
   {
-    render: (props) => {
+    render: () => {
       return (
         <div>
 
