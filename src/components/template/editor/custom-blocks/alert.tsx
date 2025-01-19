@@ -2,7 +2,8 @@ import { defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 import { Menu } from "@mantine/core";
 import { MdCancel, MdCheckCircle, MdError, MdInfo } from "react-icons/md";
-import "./styles.css";
+import "@/styles/blocknotes-styles.css";
+
 
 export const alertTypes = [
   {
@@ -11,7 +12,7 @@ export const alertTypes = [
     icon: MdError,
     color: "#e69819",
     backgroundColor: {
-      light: "#fff6e6",
+      light: "#805d20",
       dark: "#805d20",
     },
   },
@@ -21,7 +22,7 @@ export const alertTypes = [
     icon: MdCancel,
     color: "#d80d0d",
     backgroundColor: {
-      light: "#ffe6e6",
+      light: "#802020",
       dark: "#802020",
     },
   },
@@ -31,7 +32,7 @@ export const alertTypes = [
     icon: MdInfo,
     color: "#507aff",
     backgroundColor: {
-      light: "#e6ebff",
+      light: "#203380",
       dark: "#203380",
     },
   },
@@ -41,7 +42,7 @@ export const alertTypes = [
     icon: MdCheckCircle,
     color: "#0bc10b",
     backgroundColor: {
-      light: "#e6ffe6",
+      light: "#208020",
       dark: "#208020",
     },
   },
