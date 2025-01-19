@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { CreateBlog } from '@/actions/blogs-action';
+import { CreateProject } from '@/actions/project-action';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useFormStatus } from 'react-dom';
@@ -21,7 +21,7 @@ interface getTechProps {
   tech: string;
 }
 
-export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; getTech: getTechProps[] }) => {
+export const ProjectCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; getTech: getTechProps[] }) => {
   const [content, setContent] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -77,7 +77,7 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
     });
 
 
-    CreateBlog(formData)
+    CreateProject(formData)
   };
 
   return (

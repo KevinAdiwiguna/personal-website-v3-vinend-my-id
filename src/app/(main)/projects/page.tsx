@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { GetAllBlogs } from '@/actions/blogs-action'
+import { GetAllProject, } from '@/actions/project-action'
 import Image from 'next/image'
 import { formatDate } from '@/lib/format-date'
 import { ActionButton } from '@/components/atoms/button'
@@ -19,12 +19,12 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
 
   // const totalCount = await GetBlogsByCount(defaultQuery)
 
-  const getAllBlogs = await GetAllBlogs({ query: defaultQuery, page: defaultPages })
+  const getProject = await GetAllProject({ query: defaultQuery, page: defaultPages })
   return (
     <div className='md:grid md:grid-cols-2 gap-x-8'>
-      {getAllBlogs.map((res) => {
+      {getProject.map((res) => {
         return (
-          <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
+          <ActionButton key={res.id} to={`/projects/${res.id.toString()}`}>
             <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">
               <div className="duration-500 relative rounded-xl" style={{ height: 400, overflow: "hidden" }}>
                 <div className="overflow-hidden">
@@ -34,14 +34,13 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
                     width={10000}
                     height={1000}
                     className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 object-cover object-left w-full h-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
-                    src={res.images}
+                    src={res.thumbnail}
                   />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black opacity-80 transition-opacity duration-300"></div>
               </div>
               <div className="absolute flex flex-col justify-between p-5 space-y-4 h-full w-full">
                 <div className="flex flex-wrap gap-2">
-
                   {res?.tags?.length > 0 && res.tags.map((tag) => {
                     return (
                       <div
@@ -49,6 +48,16 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
                         className="px-2.5 py-1 rounded-full font-mono text-xs text-neutral-400 bg-neutral-900/50">
                         <span className="font-semibold mr-1">#</span>
                         {tag?.tag?.tag}
+                      </div>
+                    )
+                  })}
+                  {res?.technologies?.length > 0 && res.technologies.map((tech) => {
+                    return (
+                      <div
+                        key={tech?.technology?.id}
+                        className="px-2.5 py-1 rounded-full font-mono text-xs text-neutral-400 bg-neutral-900/50">
+                        <span className="font-semibold mr-1">#</span>
+                        {tech?.technology?.tech}
                       </div>
                     )
                   })}

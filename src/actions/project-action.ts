@@ -1,25 +1,23 @@
 "use server"
-
-import { db } from "@/db/db"
-import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
-
-import { auth } from "@/lib/auth"
-
+import { db } from "@/db/db";
+import { auth } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary"
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-interface GetAllBlogsProps {
+
+interface GetAllProjectProps {
   query: string
   page: number
 }
 
 const ITEMS_PER_PAGE = 15
 
-export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
+export const GetAllProject = async ({ query, page }: GetAllProjectProps) => {
   const offest = (page - 1) * ITEMS_PER_PAGE;
 
   try {
-    const getBlog = await db.blog.findMany({
+    const getBlog = await db.project.findMany({
       skip: offest,
       take: ITEMS_PER_PAGE,
       where: {
@@ -52,19 +50,12 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
       },
       select: {
         id: true,
+        thumbnail: true,
         userId: true,
         title: true,
         description: true,
-        images: true,
         updatedAt: true,
         viewCount: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
         tags: {
           select: {
             tag: {
@@ -85,6 +76,13 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
             },
           },
         },
+        user: {
+          select: {
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
       },
     });
     return getBlog || []
@@ -93,9 +91,9 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
   }
 };
 
-export const GetNewBlog = async (limit: number) => {
+export const GetNewProject = async (limit: number) => {
   try {
-    const getBlog = await db.blog.findMany({
+    const getBlog = await db.project.findMany({
       take: limit,
       orderBy: {
         updatedAt: "desc",
@@ -105,7 +103,7 @@ export const GetNewBlog = async (limit: number) => {
         userId: true,
         title: true,
         description: true,
-        images: true,
+        thumbnail: true,
         updatedAt: true,
         viewCount: true,
         user: {
@@ -143,8 +141,8 @@ export const GetNewBlog = async (limit: number) => {
   }
 }
 
-export const GetBlogsByCount = async (query: string) => {
-  const user = await db.blog.count({
+export const GetProjectByCount = async (query: string) => {
+  const user = await db.project.count({
     where: {
       OR: [
         {
@@ -178,8 +176,73 @@ export const GetBlogsByCount = async (query: string) => {
   return totalPages;
 }
 
-export const CreateBlog = async (formData: FormData) => {
+export const GetProjectID = async (id: string) => {
+  try {
+    await db.project.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
+    });
+    const getBlog = await db.project.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        description: true,
+        content: true,
+        thumbnail: true,
+        updatedAt: true,
+        viewCount: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                tag: true,
+              },
+            },
+          },
+        },
+        technologies: {
+          select: {
+            technology: {
+              select: {
+                id: true,
+                tech: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
+    if (!getBlog) {
+      redirect("/404");
+    }
+
+    return getBlog;
+  } catch (error) {
+    console.error("Error fetching blog:", error);
+    throw new Error(`Failed to fetch blog: ${error}`);
+  }
+}
+
+export const CreateProject = async (formData: FormData) => {
   // Autentikasi pengguna
   const session = await auth();
   if (!session?.user?.email) {
@@ -233,7 +296,7 @@ export const CreateBlog = async (formData: FormData) => {
 
     const imageUrl = await new Promise<string>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { folder: "blogs", allowed_formats: ["heic", "gif", "jpg", "png", "webp", "mp4"] },
+        { folder: "project", allowed_formats: ["heic", "gif", "jpg", "png", "webp", "mp4"] },
         (error, result) => {
           if (error) {
             reject(error);
@@ -245,12 +308,12 @@ export const CreateBlog = async (formData: FormData) => {
     });
 
     // Simpan blog ke database
-    const blog = await db.blog.create({
+    const blog = await db.project.create({
       data: {
         title,
         description,
         content,
-        images: imageUrl,
+        thumbnail: imageUrl,
         userId: checkUser.id,
         viewCount: 0,
       },
@@ -276,77 +339,11 @@ export const CreateBlog = async (formData: FormData) => {
       });
     }
 
-    revalidatePath("/dashboard/blogs");
+    revalidatePath("/dashboard/projects");
   } catch (error) {
     console.error("Error creating blog:", error);
     throw new Error(`Failed to create blog: ${error}`);
   } finally {
-    redirect("/dashboard/blogs");
+    redirect("/dashboard/projects");
   }
 };
-
-export const GetBlogByID = async (id: string) => {
-  try {
-    await db.blog.update({
-      where: {
-        id: parseInt(id),
-      },
-      data: {
-        viewCount: {
-          increment: 1,
-        },
-      },
-    });
-    const getBlog = await db.blog.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-      select: {
-        id: true,
-        userId: true,
-        title: true,
-        description: true,
-        content: true,
-        images: true,
-        updatedAt: true,
-        viewCount: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-        tags: {
-          select: {
-            tag: {
-              select: {
-                id: true,
-                tag: true,
-              },
-            },
-          },
-        },
-        technologies: {
-          select: {
-            technology: {
-              select: {
-                id: true,
-                tech: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!getBlog) {
-      redirect("/404");
-    }
-
-    return getBlog;
-  } catch (error) {
-    console.error("Error fetching blog:", error);
-    throw new Error(`Failed to fetch blog: ${error}`);
-  }
-}
