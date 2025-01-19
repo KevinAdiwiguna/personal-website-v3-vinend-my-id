@@ -94,7 +94,7 @@ export default function Editor({ setContent, editable }: EditorProps) {
 
     domAttributes: {
       editor: {
-        class: "h-screen",
+        class: "min-h-screen",
       }
     },
     initialContent: [
@@ -125,7 +125,7 @@ export default function Editor({ setContent, editable }: EditorProps) {
   return (
     <BlockNoteView
       theme={"dark"}
-      editor={editor} slashMenu={false} onChange={async () => setContent(await editor.blocksToFullHTML(editor.document))} editable={editable}>
+      editor={editor} slashMenu={false} onChange={async () => setContent(await editor.blocksToHTMLLossy(editor.document))} editable={editable}>
       <SuggestionMenuController
         triggerCharacter={"/"}
         getItems={async (query) =>
