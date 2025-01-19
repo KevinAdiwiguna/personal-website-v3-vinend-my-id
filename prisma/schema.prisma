@@ -77,6 +77,7 @@ model Project {
   userId       String
   description  String
   thumbnail    String
+  content     String?
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
   viewCount    Int

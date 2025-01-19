@@ -5,11 +5,16 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         hostname: "res.cloudinary.com"
-      }, 
+      },
       {
         hostname: "lh3.googleusercontent.com"
       }
-    ]
+    ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb"
+    }
   }
 };
 

@@ -15,6 +15,7 @@ import { ActionButton } from '@/components/atoms/button'
 // Icons
 import { FaDownload, FaGithub } from 'react-icons/fa'
 import { BlogSection } from '@/components/organisms/blog-section'
+import { ProjectSection } from '@/components/organisms/project-section'
 
 const page = () => {
   return (
@@ -91,6 +92,8 @@ const page = () => {
       <BlogSection />
 
       <StackSection />
+
+      <ProjectSection />
 
       <ServicesSection />
 
