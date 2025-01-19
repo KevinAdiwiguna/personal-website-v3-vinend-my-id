@@ -93,6 +93,56 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
   }
 };
 
+export const GetNewBlog = async (limit: number) => {
+  try {
+    const getBlog = await db.blog.findMany({
+      take: limit,
+      orderBy: {
+        updatedAt: "desc",
+      },
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        description: true,
+        images: true,
+        updatedAt: true,
+        viewCount: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                tag: true,
+              },
+            },
+          },
+        },
+        technologies: {
+          select: {
+            technology: {
+              select: {
+                id: true,
+                tech: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return getBlog || []
+  } catch (error) {
+    throw new Error(`Failed to fetch blog data ${error}`);
+  }
+}
+
 export const GetBlogsByCount = async (query: string) => {
   const user = await db.tag.count({
     where: {
