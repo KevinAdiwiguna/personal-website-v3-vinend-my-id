@@ -30,7 +30,7 @@ export const NAVIGATION: NavigationProps[] = [
   },
   {
     icon: <FaBloggerB />,
-    url: "/blogs",
+    url: "/#blogs",
     tooltip: "Blog",
   }
 ];
