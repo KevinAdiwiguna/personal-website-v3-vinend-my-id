@@ -13,7 +13,7 @@ export const BlogSection = async () => {
           <section className="border-b border-neutral-800 pb-6 border-dashed">
             <div className="font-bold flex gap-2 items-center">
               <FaBloggerB className="text-2xl" />
-              <h1 className="text-2xl">My Experience</h1>
+              <h1 className="text-2xl">My Blog</h1>
             </div>
             <div className="basic-description-color mt-2">
               My blog is a place where I share my thoughts, ideas, and experiences. I write
