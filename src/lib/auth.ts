@@ -28,4 +28,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   secret: process.env.AUTH_SECRET,
   debug: false,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        const dbUser = await db.user.findUnique({
+          where: { email: user.email! },
+          select: { role: true },
+        })
+        token.role = dbUser?.role  
+      }
+      return token
+    },
+    async session({ session, token }: any) {
+      session.user.role = token.role
+      return session
+    },
+  }
 })
