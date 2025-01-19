@@ -14,6 +14,7 @@ import { ActionButton } from '@/components/atoms/button'
 
 // Icons
 import { FaDownload, FaGithub } from 'react-icons/fa'
+import { BlogSection } from '@/components/organisms/blog-section'
 
 const page = () => {
   return (
@@ -51,7 +52,7 @@ const page = () => {
             <ActionButton
               target="_blank"
               download="CV-Kevin-Adiwiguna.pdf"
-              leftIcon={ <FaDownload className="text-xl" />}
+              leftIcon={<FaDownload className="text-xl" />}
               className="flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-center basic-hover"
               to="https://docs.google.com/document/d/1rGu1DqtaNKyTI922k4rkiJUYHuIevLGGw7LnWD6ySa4/edit?tab=t.0">
               Download CV
@@ -75,7 +76,7 @@ const page = () => {
           </ActionButton>
           <ActionButton
             target="_blank"
-            leftIcon={ <FaDownload className="text-xl" />}
+            leftIcon={<FaDownload className="text-xl" />}
             download="CV-Kevin-Adiwiguna.pdf"
             className="flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-center basic-button"
             to="https://docs.google.com/document/d/1rGu1DqtaNKyTI922k4rkiJUYHuIevLGGw7LnWD6ySa4/edit?tab=t.0">
@@ -86,6 +87,8 @@ const page = () => {
       <TechScroll />
 
       <ExperienceSection />
+
+      <BlogSection />
 
       <StackSection />
 
