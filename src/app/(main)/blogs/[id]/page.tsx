@@ -4,6 +4,7 @@ import { formatDate } from '@/lib/format-date'
 import parse from 'html-react-parser';
 import Image from 'next/image'
 import React from 'react'
+import "@/styles/blocknotes-styles.css";
 
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id
@@ -44,8 +45,8 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
       <div className='mt-24'>
         <h1 className='text-3xl font-bold mt-8 mb-2'>{getBlogById.title}</h1>
         <p className='text-xl mb-16'>{getBlogById.description}</p>
-        <div className='prose prose-neutral dark:prose-invert lg:prose-xl'>
-          {parse(getBlogById?.content || "")}
+        <div className='prose dark:prose-invert lg:prose-xl'>
+          {parse(getBlogById?.content || '')}
         </div>
       </div>
 
