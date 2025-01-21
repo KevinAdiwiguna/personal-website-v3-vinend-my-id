@@ -1,8 +1,17 @@
-import { GetNewBlog } from "@/actions/blogs-action"
-import { ActionButton } from "../atoms/button"
 import Image from "next/image"
+
+// Action
+import { GetNewBlog } from "@/actions/blogs-action"
+
+// Component
+import { ActionButton } from "../atoms/button"
+
+// lib
 import { formatDate } from "@/lib/format-date"
+
+// Icons
 import { FaBloggerB } from "react-icons/fa"
+import { FaAngleRight } from "react-icons/fa6";
 
 export const BlogSection = async () => {
   const getAllBlogs = await GetNewBlog(4)
@@ -25,13 +34,13 @@ export const BlogSection = async () => {
                 <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
                   <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">
                     <div className="duration-500 relative rounded-xl" style={{ height: 400, overflow: "hidden" }}>
-                      <div className="overflow-hidden">
+                      <div style={{ height: 400, overflow: "hidden" }}>
                         <Image
                           alt={res.title}
                           loading="lazy"
                           width={10000}
-                          height={1000}
-                          className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 object-cover object-left w-full h-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
+                          height={10000}
+                          className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 w-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
                           src={res.images}
                         />
                       </div>
@@ -80,14 +89,14 @@ export const BlogSection = async () => {
                         </div>
                         <div className="border-t border-neutral-700 my-4" data-testid="breakline"></div>
                         <div className="flex justify-between gap-4 text-neutral-400 px-0.5">
-                          <div className="overflow-hidde flex gap-x-0 sm:gap-x-2">
+                          <div className="overflow-hidde flex justify-center gap-x-1 sm:gap-x-3">
                             <Image
                               alt={res.user.name || res.user.email || ""}
                               loading="lazy"
                               width="25"
                               height="25"
                               decoding="async"
-                              className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 rounded-full"
+                              className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 rounded-full min-w-8 min-h-8 max-w-8 max-h-8"
                               src={res?.user?.image || "https://cdn.fakercloud.com/avatars"}
                             />
                             <p>{res.user.name}</p>
@@ -116,6 +125,7 @@ export const BlogSection = async () => {
               )
             })}
           </div>
+          <ActionButton to="/blogs" className="font-semibold flex items-center gap-0 px-0 pr-2 justify-center my-0 py-0 hover:underline duration-300" rightIcon={<FaAngleRight />}><span>More Blogs</span></ActionButton>
         </div>
       )}
     </>
