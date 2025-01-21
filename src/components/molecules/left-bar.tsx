@@ -1,13 +1,14 @@
 "use client"
 import { NAVIGATION } from "@/constant/navigation";
 import { ActionButton } from "@/components/atoms/button";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaBloggerB, FaMoon, FaSun } from "react-icons/fa";
 
 // Hooks
 // client hooks
 import { useChangeTheme } from "@/hooks/useChangeTheme";
 
-export const LeftBar = () => {
+
+export const LeftBar = ({ blogCount, projectCount }: { blogCount: number, projectCount: number }) => {
 	const { isDark, toggleTheme } = useChangeTheme();
 
 	return (
@@ -25,6 +26,22 @@ export const LeftBar = () => {
 						{res.icon}
 					</ActionButton>
 				))}
+				{blogCount > 0 && (
+					<ActionButton
+						tooltip={"Blogs"}
+						to="/#blogs"
+						className="cursor-pointer rounded-md p-3 navigation-button">
+						<FaBloggerB />
+					</ActionButton>
+				)}
+				{projectCount > 0 && (
+					<ActionButton
+						tooltip={"Project"}
+						to="/#project"
+						className="cursor-pointer rounded-md p-3 navigation-button">
+						<FaBloggerB />
+					</ActionButton>
+				)}
 			</div>
 		</aside>
 	);
