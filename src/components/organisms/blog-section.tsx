@@ -14,7 +14,7 @@ import { FaBloggerB } from "react-icons/fa"
 import { FaAngleRight } from "react-icons/fa6";
 
 export const BlogSection = async () => {
-  const getAllBlogs = await GetNewBlog(4)
+  const getAllBlogs = await GetNewBlog(2)
   return (
     <>
       {getAllBlogs.length > 0 && (

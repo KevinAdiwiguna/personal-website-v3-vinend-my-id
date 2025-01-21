@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/format-date"
 import { FaBloggerB } from "react-icons/fa"
 
 export const ProjectSection = async () => {
-  const GetAllProject = await GetNewProject(4)
+  const GetAllProject = await GetNewProject(2)
   return (
     <>
       {GetAllProject.length > 0 && (
