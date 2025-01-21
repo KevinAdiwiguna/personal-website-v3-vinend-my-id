@@ -347,3 +347,11 @@ export const CreateProject = async (formData: FormData) => {
     redirect("/dashboard/projects");
   }
 };
+
+
+export const CheckProjectCount = async () => {
+  const blogCount = await db.project.count({
+    take: 3
+  })
+  return blogCount
+}
