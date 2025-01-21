@@ -40,7 +40,7 @@ export const BlogSection = async () => {
                           loading="lazy"
                           width={10000}
                           height={10000}
-                          className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 w-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
+                          className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 w-full h-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
                           src={res.images}
                         />
                       </div>
