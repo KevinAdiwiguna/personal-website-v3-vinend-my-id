@@ -1,5 +1,7 @@
 import React from "react";
-import { FaHome, FaBriefcase, FaLayerGroup, FaCog, FaBloggerB } from "react-icons/fa";
+import { FaHome, FaBriefcase, FaLayerGroup, FaCog } from "react-icons/fa";
+
+// import { FaBloggerB } from 'react-icons/fa'
 
 interface NavigationProps {
   icon: React.ReactNode;
