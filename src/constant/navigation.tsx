@@ -28,9 +28,9 @@ export const NAVIGATION: NavigationProps[] = [
     url: "/#services",
     tooltip: "Services",
   },
-  {
-    icon: <FaBloggerB />,
-    url: "/#blogs",
-    tooltip: "Blog",
-  }
+  // {
+  //   icon: <FaBloggerB />,
+  //   url: "/#blogs",
+  //   tooltip: "Blog",
+  // }
 ];

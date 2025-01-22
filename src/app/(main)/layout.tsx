@@ -14,6 +14,10 @@ import { RightBar } from "@/components/molecules/right-bar";
 import { LeftBar } from "@/components/molecules/left-bar";
 import { Sidebar } from "@/components/organisms/sidebar";
 
+// Action
+import { CheckBlogCount } from '@/actions/blogs-action'
+import { CheckProjectCount } from '@/actions/project-action'
+
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -35,13 +39,15 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const blogCount = await CheckBlogCount() as number
+	const projectCount = await CheckProjectCount() as number
+
 	return (
 		<html lang="en" className="dark">
-
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<Provider>
 					<div className="lg:grid lg:grid-cols-8">
-						<LeftBar />
+						<LeftBar blogCount={blogCount} projectCount={projectCount}/>
 						<div className="col-span-6 px-4 md:px-0">
 							<Sidebar useRemoteWork />
 							<div className="py-6 md:px-6 md:py-4">{children}</div>

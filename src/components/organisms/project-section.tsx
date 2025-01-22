@@ -2,10 +2,10 @@ import { GetNewProject } from "@/actions/project-action"
 import { ActionButton } from "../atoms/button"
 import Image from "next/image"
 import { formatDate } from "@/lib/format-date"
-import { FaBloggerB } from "react-icons/fa"
+import { FaAngleRight, FaBloggerB } from "react-icons/fa"
 
 export const ProjectSection = async () => {
-  const GetAllProject = await GetNewProject(4)
+  const GetAllProject = await GetNewProject(2)
   return (
     <>
       {GetAllProject.length > 0 && (
@@ -16,7 +16,7 @@ export const ProjectSection = async () => {
               <h1 className="text-2xl">My Project</h1>
             </div>
             <div className="basic-description-color mt-2">
-              My project is a collection of projects that I have worked on. I have worked on various projects, from personal projects to projects that I have worked on with other people. Here are some of the projects that I have worked on.
+              My project is a place where I share my thoughts, ideas, and experiences. I write
             </div>
           </section>
           <div className='md:grid md:grid-cols-2'>
@@ -25,13 +25,13 @@ export const ProjectSection = async () => {
                 <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
                   <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">
                     <div className="duration-500 relative rounded-xl" style={{ height: 400, overflow: "hidden" }}>
-                      <div className="overflow-hidden">
+                      <div style={{ height: 400, overflow: "hidden" }}>
                         <Image
                           alt={res.title}
                           loading="lazy"
                           width={10000}
-                          height={1000}
-                          className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 object-cover object-left w-full h-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
+                          height={10000}
+                          className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 w-full h-full transform transition-transform group-hover:scale-105 group-hover:blur-sm"
                           src={res.thumbnail}
                         />
                       </div>
@@ -39,15 +39,15 @@ export const ProjectSection = async () => {
                     </div>
                     <div className="absolute flex flex-col justify-between p-5 space-y-4 h-full w-full">
                       <div className="flex flex-wrap gap-2">
-
-                        {res?.tags?.length > 0 && res.tags.map((tag) => {
+                        {res?.technologies?.length > 0 && res.technologies.map((tech) => {
                           return (
-                            <div
-                              key={tag.tag?.id}
-                              className="px-2.5 py-1 rounded-full font-mono text-xs text-neutral-400 bg-neutral-900/50">
-                              <span className="font-semibold mr-1">#</span>
-                              {tag?.tag?.tag}
-                            </div>
+                            <Image
+                              width={25}
+                              height={25}
+                              alt={tech.technology?.tech || ""}
+                              key={tech.technology?.id}
+                              className="px-1"
+                              src={tech.technology?.images || ""} />
                           )
                         })}
                       </div>
@@ -80,14 +80,14 @@ export const ProjectSection = async () => {
                         </div>
                         <div className="border-t border-neutral-700 my-4" data-testid="breakline"></div>
                         <div className="flex justify-between gap-4 text-neutral-400 px-0.5">
-                          <div className="overflow-hidde flex gap-x-0 sm:gap-x-2">
+                          <div className="overflow-hidde flex justify-center gap-x-1 sm:gap-x-3">
                             <Image
                               alt={res.user.name || res.user.email || ""}
                               loading="lazy"
                               width="25"
                               height="25"
                               decoding="async"
-                              className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 rounded-full"
+                              className="duration-700 ease-in-out scale-100 blur-0 grayscale-0 rounded-full min-w-8 min-h-8 max-w-8 max-h-8"
                               src={res?.user?.image || "https://cdn.fakercloud.com/avatars"}
                             />
                             <p>{res.user.name}</p>
@@ -116,6 +116,7 @@ export const ProjectSection = async () => {
               )
             })}
           </div>
+          <ActionButton to="/project" className="font-semibold flex items-center gap-0 px-0 pr-2 justify-center my-0 py-0 hover:underline duration-300" rightIcon={<FaAngleRight />}><span>More Blogs</span></ActionButton>
         </div>
       )}
     </>

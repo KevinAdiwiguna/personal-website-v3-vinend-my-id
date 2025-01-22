@@ -350,3 +350,11 @@ export const GetBlogByID = async (id: string) => {
     throw new Error(`Failed to fetch blog: ${error}`);
   }
 }
+
+export const CheckBlogCount = async () => {
+  const blog = await db.blog.count({
+    take: 3
+  })
+  return blog
+}
+
