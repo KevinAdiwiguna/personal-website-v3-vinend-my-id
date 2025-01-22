@@ -129,6 +129,7 @@ export const GetNewProject = async (limit: number) => {
               select: {
                 id: true,
                 tech: true,
+                images: true,
               },
             },
           },
@@ -224,6 +225,7 @@ export const GetProjectID = async (id: string) => {
               select: {
                 id: true,
                 tech: true,
+                images: true
               },
             },
           },
@@ -308,11 +310,11 @@ export const CreateProject = async (formData: FormData) => {
     });
 
     // Simpan blog ke database
-    const blog = await db.project.create({
+    const project = await db.project.create({
       data: {
-        title,
-        description,
-        content,
+        title: title,
+        description: description,
+        content: content,
         thumbnail: imageUrl,
         userId: checkUser.id,
         viewCount: 0,
@@ -323,7 +325,7 @@ export const CreateProject = async (formData: FormData) => {
     if (parsedTags.length > 0) {
       await db.tagRelation.createMany({
         data: parsedTags.map((tagId) => ({
-          blogId: blog.id,
+          projectId: project.id,
           tagId,
         })),
       });
@@ -333,7 +335,7 @@ export const CreateProject = async (formData: FormData) => {
     if (parsedTechnologies.length > 0) {
       await db.technologyRelation.createMany({
         data: parsedTechnologies.map((techId) => ({
-          blogId: blog.id,
+          projectId: project.id,
           techId,
         })),
       });
