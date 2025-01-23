@@ -350,10 +350,28 @@ export const CreateProject = async (formData: FormData) => {
   }
 };
 
-
 export const CheckProjectCount = async () => {
   const blogCount = await db.project.count({
     take: 3
   })
   return blogCount
+}
+
+export const DeleteProject = async (formData: FormData) => {
+  const id = formData.get('id') as string
+
+  try {
+    if (!id) {
+      throw new Error("Invalid blog id")
+    }
+    await db.project.delete({
+      where: {
+        id: parseInt(id),
+      }
+    })
+    revalidatePath("/dashboard/projects");
+  } catch (error) {
+    console.error("Error deleting projects:", error);
+    throw new Error(`Failed to delete projects: ${error}`);
+  }
 }

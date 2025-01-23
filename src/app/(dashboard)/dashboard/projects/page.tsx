@@ -7,7 +7,7 @@ import { BiTrash } from 'react-icons/bi'
 
 
 import Search from '@/components/organisms/search'
-import { GetAllProject, GetProjectByCount } from '@/actions/project-action'
+import { GetAllProject, GetProjectByCount, DeleteProject } from '@/actions/project-action'
 import { formatDate } from '@/lib/format-date'
 
 interface searchParamsProps {
@@ -56,7 +56,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
                 <td className="py-3 px-6">{project.user.name}</td>
                 <td className="py-3 px-6"><ActionButton className='basic-link' to={project.thumbnail || ""}>{project.thumbnail ? "Profile Picture" : "Null"}</ActionButton>  </td>
                 <td className="flex justify-center gap-1 py-3">
-                  <form >
+                  <form action={DeleteProject}>
                     <input type="text" name="id" defaultValue={project.id.toString()} hidden />
                     <ActionButton
                       type='submit'
