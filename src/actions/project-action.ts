@@ -357,8 +357,8 @@ export const CheckProjectCount = async () => {
   return blogCount
 }
 
-export const DeleteBlog = async (formData: FormData) => {
-  const id = await formData.get('id') as string
+export const DeleteProject = async (formData: FormData) => {
+  const id = formData.get('id') as string
 
   try {
     if (!id) {
