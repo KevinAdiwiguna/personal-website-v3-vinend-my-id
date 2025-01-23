@@ -358,3 +358,20 @@ export const CheckBlogCount = async () => {
   return blog
 }
 
+export const DeleteBlog = async (id: string) => {
+
+  try {
+    if (!id) {
+      throw new Error("Invalid blog id")
+    }
+    await db.blog.delete({
+      where: {
+        id: parseInt(id),
+      }
+    })
+    revalidatePath("/dashboard/blogs");
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    throw new Error(`Failed to delete blog: ${error}`);
+  }
+}
