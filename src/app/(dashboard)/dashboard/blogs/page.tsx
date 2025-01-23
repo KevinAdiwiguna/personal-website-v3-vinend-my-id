@@ -7,7 +7,7 @@ import { BiTrash } from 'react-icons/bi'
 
 
 import Search from '@/components/organisms/search'
-import { GetAllBlogs, GetBlogsByCount } from '@/actions/blogs-action'
+import { GetAllBlogs, GetBlogsByCount, DeleteBlog } from '@/actions/blogs-action'
 import { formatDate } from '@/lib/format-date'
 
 interface searchParamsProps {
@@ -56,7 +56,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
                 <td className="py-3 px-6">{blog.user.name}</td>
                 <td className="py-3 px-6"><ActionButton className='basic-link' to={blog.images || ""}>{blog.images ? "Profile Picture" : "Null"}</ActionButton>  </td>
                 <td className="flex justify-center gap-1 py-3">
-                  <form >
+                  <form action={DeleteBlog}>
                     <input type="text" name="id" defaultValue={blog.id.toString()} hidden />
                     <ActionButton
                       type='submit'
