@@ -1,17 +1,10 @@
 "use server"
 
 import { db } from "@/db/db"
+import { ITEMS_PER_PAGE, QueryParamsProps, ResponseState } from "@/types/globals"
 import { revalidatePath } from "next/cache"
 
-
-interface GetAllUserProps {
-  query: string
-  page: number
-}
-
-const ITEMS_PER_PAGE = 15
-
-export const GetAllUser = async ({ query, page }: GetAllUserProps) => {
+export const GetAllUser = async ({ query, page }: QueryParamsProps) => {
   const offest = (page - 1) * ITEMS_PER_PAGE
 
   try {
@@ -36,9 +29,19 @@ export const GetAllUser = async ({ query, page }: GetAllUserProps) => {
         ]
       }
     })
-    return users
+  
+    return {
+      status: 200,
+      message: "User fetched successfully",
+      data: users,
+      timeStamp: new Date()
+    }
   } catch (error) {
-    throw new Error(`Failed to fetch contact data ${error}`);
+    return {
+      stauts: 500,
+      message: `Failed to fetch user ${error}`,
+      timeStamp: new Date()
+    }
   }
 
 }
@@ -73,7 +76,7 @@ export const GetUserByCount = async (query: string) => {
   return totalPages;
 }
 
-export const DeleteUserByUUID = async (formData: FormData) => {
+export const DeleteUserByUUID = async (previousState: unknown, formData: FormData): Promise<ResponseState> =>  {
   const id = formData.get("id")
   try {
     await db.user.delete({
@@ -81,8 +84,19 @@ export const DeleteUserByUUID = async (formData: FormData) => {
         id: id?.toString()
       }
     })
-    revalidatePath("/dashboard/users");
+
+    return {
+      status: 200,
+      message: "User deleted successfully",
+      timeStamp: new Date()
+    }
   } catch (error) {
-    throw new Error(`Failed to delete user ${error}`);
+    return {
+      status: 500,
+      message: `Failed to delete user ${error}`,
+      timeStamp: new Date()
+    }
+  } finally {
+    revalidatePath("/dashboard/users");
   }
 }
