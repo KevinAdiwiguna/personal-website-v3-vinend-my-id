@@ -2,17 +2,10 @@
 
 import { db } from "@/db/db"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 
+import {ITEMS_PER_PAGE, QueryParamsProps, ResponseState}from '@/types/globals'
 
-interface GetAllTagProps {
-  query: string
-  page: number
-}
-
-const ITEMS_PER_PAGE = 15
-
-export const GetAllTag = async ({ query, page }: GetAllTagProps) => {
+export const GetAllTag = async ({ query, page }: QueryParamsProps) => {
   const offest = (page - 1) * ITEMS_PER_PAGE
 
   try {
@@ -28,15 +21,21 @@ export const GetAllTag = async ({ query, page }: GetAllTagProps) => {
               mode: "insensitive"
             }
           },
-          {
-
-          }
         ]
       }
     })
-    return users
+    return {
+      status: 200,
+      message: "Tag fetched successfully",
+      data: users,
+      timeStamp: new Date(),
+    }
   } catch (error) {
-    throw new Error(`Failed to fetch contact data ${error}`);
+    return {
+      stauts: 500,
+      message: `Failed to fetch tag ${error}`,
+      timeStamp: new Date(),
+    }
   }
 
 }
@@ -61,7 +60,7 @@ export const GetTagByCount = async (query: string) => {
 
 export const DeleteTagByID = async (formData: FormData) => {
   const id = formData.get("id") as string
-  if (!id) {
+  if (!id || isNaN(parseInt(id))) {
     throw new Error("Invalid user id");
   }
 
@@ -73,16 +72,30 @@ export const DeleteTagByID = async (formData: FormData) => {
         deletedAt: new Date()
       }
     })
-    revalidatePath("/dashboard/tag");
+    return {
+      status: 200,
+      message: "Tag deleted successfully",
+      timeStamp: new Date(),
+    }
   } catch (error) {
-    throw new Error(`Failed to delete user ${error}`);
+    return {
+      stauts: 500,
+      message: `Failed to delete tag ${error}`,
+      timeStamp: new Date(),
+    }
+  } finally {
+    revalidatePath("/dashboard/tag");
   }
 }
 
-export const CreateTag = async (formData: FormData) => {
+export const CreateTag =  async (previousState: unknown, formData: FormData): Promise<ResponseState>  => {
   const tag = formData.get("tag") as string
-  if (!tag) {
-    throw new Error("Invalid tag");
+  if (!tag || typeof tag == 'string') {
+    return {
+      status: 400,
+      message: "Invalid tag data type",
+      timeStamp: new Date(),
+    }
   }
 
   try {
@@ -91,10 +104,18 @@ export const CreateTag = async (formData: FormData) => {
         tag: tag
       }
     })
-    revalidatePath("/dashboard/tag");
+    return {
+      status: 200,
+      message: "Tag created successfully",
+      timeStamp: new Date(),
+    }
   } catch (error) {
-    throw new Error(`Failed to create tag ${error}`);
+    return {
+      status: 500,
+      message: `Failed to create tag ${error}`,
+      timeStamp: new Date(),
+    }
   } finally {
-    redirect("/dashboard/tag");
+    revalidatePath("/dashboard/tag");
   }
 }
