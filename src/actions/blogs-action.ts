@@ -1,21 +1,17 @@
-"use server"
+"use server";
 
-import { db } from "@/db/db"
-import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-import { auth } from "@/lib/auth"
+import { db } from "@/db/db";
 
-import cloudinary from "@/lib/cloudinary"
+import { auth } from "@/lib/auth";
 
-interface GetAllBlogsProps {
-  query: string
-  page: number
-}
+import cloudinary from "@/lib/cloudinary";
 
-const ITEMS_PER_PAGE = 15
+import { ITEMS_PER_PAGE, QueryParamsProps, ResponseState } from "@/types/globals";
 
-export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
+export const GetAllBlogs = async ({ query, page }: QueryParamsProps) => {
   const offest = (page - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -47,7 +43,7 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
                 mode: "insensitive",
               },
             },
-          }
+          },
         ],
       },
       select: {
@@ -87,9 +83,18 @@ export const GetAllBlogs = async ({ query, page }: GetAllBlogsProps) => {
         },
       },
     });
-    return getBlog || []
+    return {
+      status: 200,
+      message: "Blog fetched successfully",
+      data: getBlog || [],
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    throw new Error(`Failed to fetch blog data ${error}`);
+    return {
+      status: 500,
+      message: `Failed to fetch blog ${error}`,
+      timeStamp: new Date(),
+    };
   }
 };
 
@@ -137,11 +142,20 @@ export const GetNewBlog = async (limit: number) => {
         },
       },
     });
-    return getBlog || []
+    return {
+      status: 200,
+      message: "Blog fetched successfully",
+      data: getBlog || [],
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    throw new Error(`Failed to fetch blog data ${error}`);
+    return {
+      status: 500,
+      message: `Failed to fetch blog ${error}`,
+      timeStamp: new Date(),
+    };
   }
-}
+};
 
 export const GetBlogsByCount = async (query: string) => {
   const user = await db.blog.count({
@@ -170,24 +184,20 @@ export const GetBlogsByCount = async (query: string) => {
               mode: "insensitive",
             },
           },
-        }
+        },
       ],
-    }
-  })
+    },
+  });
   const totalPages = Math.ceil(Number(user) / ITEMS_PER_PAGE);
   return totalPages;
-}
+};
 
-export const CreateBlog = async (formData: FormData) => {
-
-  // Autentikasi pengguna
+export const CreateBlog = async (previousState: unknown, formData: FormData): Promise<ResponseState> => {
   const session = await auth();
   if (!session?.user?.email) {
     redirect("/auth/signin");
-    return;
   }
 
-  // Validasi role pengguna
   const checkUser = await db.user.findUnique({
     where: {
       email: session.user.email,
@@ -195,10 +205,9 @@ export const CreateBlog = async (formData: FormData) => {
   });
 
   if (!checkUser || (checkUser.role !== "ADMIN" && checkUser.role !== "EDITOR")) {
-    throw new Error("You are not authorized to create a blog");
+    redirect("/dashboard/blogs");
   }
 
-  // Ekstraksi data dari formData
   const image = formData.get("images") as File | null;
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
@@ -206,45 +215,60 @@ export const CreateBlog = async (formData: FormData) => {
   const tags = formData.getAll("tags") as string[];
   const technologies = formData.getAll("tech") as string[];
 
-  // Validasi data
-  if (!image || !(image instanceof File)) {
-    throw new Error("Invalid or missing image file in formData.");
+  if (!image) {
+    return {
+      status: 400,
+      message: "Invalid image data type",
+      timeStamp: new Date(),
+    };
   }
 
   if (!title || !description || !content) {
-    throw new Error("Invalid blog data. Title, description, and content are required.");
+    return {
+      status: 400,
+      message: "Invalid title, description, or content",
+      timeStamp: new Date(),
+    };
   }
 
   if (!tags.every((tag) => !isNaN(parseInt(tag, 10)))) {
-    throw new Error("Invalid tags format.");
+    return {
+      status: 400,
+      message: "Invalid tags format",
+      timeStamp: new Date(),
+    };
   }
 
   if (!technologies.every((tech) => !isNaN(parseInt(tech, 10)))) {
-    throw new Error("Invalid technologies format.");
+    return {
+      status: 400,
+      message: "Invalid technologies format",
+      timeStamp: new Date(),
+    };
   }
 
   const parsedTags = tags.map((tag) => parseInt(tag, 10));
   const parsedTechnologies = technologies.map((tech) => parseInt(tech, 10));
 
   try {
-    // Upload gambar ke Cloudinary
     const arrayBuffer = await image.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
     const imageUrl = await new Promise<string>((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { folder: "blogs", allowed_formats: ["heic", "gif", "jpg", "png", "webp", "mp4"] },
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result?.url || "");
+      cloudinary.uploader
+        .upload_stream(
+          { folder: "blogs", allowed_formats: ["heic", "gif", "jpg", "png", "webp", "mp4"] },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result?.url || "");
+            }
           }
-        }
-      ).end(buffer);
+        )
+        .end(buffer);
     });
 
-    // Simpan blog ke database
     const blog = await db.blog.create({
       data: {
         title,
@@ -256,7 +280,6 @@ export const CreateBlog = async (formData: FormData) => {
       },
     });
 
-    // Simpan relasi tags ke database
     if (parsedTags.length > 0) {
       await db.tagRelation.createMany({
         data: parsedTags.map((tagId) => ({
@@ -266,7 +289,6 @@ export const CreateBlog = async (formData: FormData) => {
       });
     }
 
-    // Simpan relasi teknologi ke database
     if (parsedTechnologies.length > 0) {
       await db.technologyRelation.createMany({
         data: parsedTechnologies.map((techId) => ({
@@ -276,17 +298,38 @@ export const CreateBlog = async (formData: FormData) => {
       });
     }
 
-    revalidatePath("/dashboard/blogs");
+    return {
+      status: 201,
+      message: "Blog created successfully",
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    console.error("Error creating blog:", error);
-    throw new Error(`Failed to create blog: ${error}`);
+    return {
+      status: 500,
+      message: `Failed to create blog ${error}`,
+      timeStamp: new Date(),
+    };
   } finally {
-    redirect("/dashboard/blogs");
+    revalidatePath("/dashboard/blogs");
   }
 };
 
 export const GetBlogByID = async (id: string) => {
+  if (!id || isNaN(parseInt(id))) {
+    redirect("/404");
+  }
+
   try {
+    const checkBlog = await db.blog.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!checkBlog) {
+      redirect("/404");
+    }
+
     await db.blog.update({
       where: {
         id: parseInt(id),
@@ -297,6 +340,7 @@ export const GetBlogByID = async (id: string) => {
         },
       },
     });
+
     const getBlog = await db.blog.findUnique({
       where: {
         id: parseInt(id),
@@ -344,36 +388,57 @@ export const GetBlogByID = async (id: string) => {
       redirect("/404");
     }
 
-    return getBlog;
+    return {
+      status: 200,
+      message: "Blog fetched successfully",
+      data: getBlog,
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    console.error("Error fetching blog:", error);
-    throw new Error(`Failed to fetch blog: ${error}`);
+    return {
+      status: 500,
+      message: `Failed to fetch blog ${error}`,
+      timeStamp: new Date(),
+    };
   }
-}
+};
 
 export const CheckBlogCount = async () => {
   const blog = await db.blog.count({
-    take: 3
-  })
-  return blog
-}
+    take: 3,
+  });
+  return blog;
+};
 
-export const DeleteBlog = async (formData: FormData) => {
-  const id =  formData.get('id') as string
-
+export const DeleteBlog = async (previousState: unknown, formData: FormData): Promise<ResponseState> => {
+  const id = formData.get("id") as string;
+  if(!id || isNaN(parseInt(id))) {
+    return {
+      status: 400,
+      message: "Invalid blog id",
+      timeStamp: new Date(),
+    };
+  }
 
   try {
-    if (!id) {
-      throw new Error("Invalid blog id")
-    }
     await db.blog.delete({
       where: {
         id: parseInt(id),
-      }
-    })
-    revalidatePath("/dashboard/blogs");
+      },
+    });
+    
+    return {
+      status: 200,
+      message: "Blog deleted successfully",
+      timeStamp: new Date(),
+    }
   } catch (error) {
-    console.error("Error deleting blog:", error);
-    throw new Error(`Failed to delete blog: ${error}`);
+    return {
+      status: 500,
+      message: `Failed to delete blog ${error}`,
+      timeStamp: new Date(),
+    }
+  } finally {
+    revalidatePath("/dashboard/blogs");
   }
-}
+};

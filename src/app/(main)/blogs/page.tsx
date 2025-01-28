@@ -19,10 +19,11 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
 
   // const totalCount = await GetBlogsByCount(defaultQuery)
 
-  const getAllBlogs = await GetAllBlogs({ query: defaultQuery, page: defaultPages })
+  const fetchBlogs = await GetAllBlogs({ query: defaultQuery, page: defaultPages })
+  const blogsData = fetchBlogs.data
   return (
     <div className='md:grid md:grid-cols-2 gap-x-8'>
-      {getAllBlogs.map((res) => {
+      {blogsData && blogsData.map((res) => {
         return (
           <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
             <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">

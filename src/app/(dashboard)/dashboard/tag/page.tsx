@@ -5,9 +5,7 @@ import Pagination from '@/components/organisms/pagination'
 import Search from '@/components/organisms/search'
 import { Breadcrumb } from '@/components/atoms/bread-crumb'
 import { ActionButton } from '@/components/atoms/button'
-
-// Icons
-import { BiTrash } from 'react-icons/bi'
+import {DeleteButton} from '@/components/atoms/button'
 
 // Actions
 import { DeleteTagByID, GetAllTag, GetTagByCount } from '@/actions/tag-action'
@@ -25,7 +23,8 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
 
   const totalCount = await GetTagByCount(defaultQuery)
 
-  const getUser = await GetAllTag({ query: defaultQuery, page: defaultPages })
+  const fetchTag = await GetAllTag({ query: defaultQuery, page: defaultPages })
+  const getTagData = fetchTag.data
   return (
     <>
       <Breadcrumb />
@@ -43,19 +42,13 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
           </tr>
         </thead>
         <tbody>
-          {getUser.map((tag) => {
+          {getTagData && getTagData.map((tag) => {
             return (
               <tr key={tag.id} className="bg-neutral-800 border-b">
                 <td className="py-3 px-6">{tag.id}</td>
                 <td className="py-3 px-6">{tag.tag}</td>
                 <td className="flex justify-center gap-1 py-3">
-                  <form action={DeleteTagByID}>
-                    <input type="text" name="id" defaultValue={tag.id.toString()} hidden />
-                    <ActionButton
-                      type='submit'
-                      className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-300"
-                      leftIcon={<BiTrash className='text-xl' />} />
-                  </form>
+                  <DeleteButton actions={DeleteTagByID} id={tag.id.toString()}/>
                 </td>
               </tr>
             )

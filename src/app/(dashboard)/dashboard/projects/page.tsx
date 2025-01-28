@@ -1,13 +1,16 @@
 import React from 'react'
-import Pagination from '@/components/organisms/pagination'
+
 import { Breadcrumb } from '@/components/atoms/bread-crumb'
-import { ActionButton } from '@/components/atoms/button'
-
-import { BiTrash } from 'react-icons/bi'
-
-
+import Pagination from '@/components/organisms/pagination'
+import { ActionButton, DeleteButton } from '@/components/atoms/button'
 import Search from '@/components/organisms/search'
+
+
+
+// Actions
 import { GetAllProject, GetProjectByCount, DeleteProject } from '@/actions/project-action'
+
+// Libs
 import { formatDate } from '@/lib/format-date'
 
 interface searchParamsProps {
@@ -24,7 +27,9 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
   const totalCount = await GetProjectByCount(defaultQuery)
 
   // Untuk Get data user
-  const getProject = await GetAllProject({ query: defaultQuery, page: defaultPages })
+  const fetchProject = await GetAllProject({ query: defaultQuery, page: defaultPages })
+  
+  const projectData = fetchProject.data
   return (
     <>
       <Breadcrumb />
@@ -46,7 +51,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
           </tr>
         </thead>
         <tbody>
-          {getProject.map((project) => {
+          {projectData && projectData.map((project) => {
             return (
               <tr key={project.id} className="bg-neutral-800 border-b">
                 <td className="py-3 px-6">{project.id}</td>
@@ -56,13 +61,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
                 <td className="py-3 px-6">{project.user.name}</td>
                 <td className="py-3 px-6"><ActionButton className='basic-link' to={project.thumbnail || ""}>{project.thumbnail ? "Profile Picture" : "Null"}</ActionButton>  </td>
                 <td className="flex justify-center gap-1 py-3">
-                  <form action={DeleteProject}>
-                    <input type="text" name="id" defaultValue={project.id.toString()} hidden />
-                    <ActionButton
-                      type='submit'
-                      className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-300"
-                      leftIcon={<BiTrash className='text-xl' />} />
-                  </form>
+                  <DeleteButton id={project.id.toString()} actions={DeleteProject}/>
                 </td>
               </tr>
             )

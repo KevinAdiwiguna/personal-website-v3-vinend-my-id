@@ -20,13 +20,17 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
   const defaultQuery = query || ''
   const defaultPages = parseInt(page || '1')
 
-  const getTag = await GetAllTag({ query: defaultQuery, page: defaultPages })
-  const getTech = await GetAllTechnology({ query: defaultQuery, page: defaultPages })
+  const fetchTag = await GetAllTag({ query: defaultQuery, page: defaultPages })
+  const fetchTech = await GetAllTechnology({ query: defaultQuery, page: defaultPages })
+
+  const tagData = fetchTag.data || []
+  const techData = fetchTech.data || []
+
   return (
     <>
       <Breadcrumb />
       <h1 className="my-4 text-2xl font-bold">Create Projects</h1>
-      <ProjectCreateForm getTag={getTag} getTech={getTech} />
+      <ProjectCreateForm tagData={tagData} techData={techData} />
     </>
   );
 };

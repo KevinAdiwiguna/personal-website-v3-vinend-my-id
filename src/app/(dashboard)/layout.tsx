@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import "@blocknote/mantine/style.css";
 import { Provider } from "@/providers/session-providers";
 import DashboardSidebar from "@/components/organisms/dashboard-sidebar";
+import { ToastContainer } from "react-toastify";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -33,8 +34,8 @@ export default function RootLayout({
 					<div className="h-screen w-screen overflow-hidden flex flex-row">
 						<DashboardSidebar />
 						<div className="flex flex-col flex-1">
-							{/* <Header /> */}
 							<div className="flex-1 p-4 min-h-0 overflow-auto">
+							<ToastContainer closeButton={true} position="top-right" />
 								{children}
 							</div>
 						</div>

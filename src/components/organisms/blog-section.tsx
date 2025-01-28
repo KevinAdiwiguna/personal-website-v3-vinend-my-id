@@ -15,9 +15,10 @@ import { FaAngleRight } from "react-icons/fa6";
 
 export const BlogSection = async () => {
   const getAllBlogs = await GetNewBlog(2)
+  const dataBlog = getAllBlogs.data
   return (
     <>
-      {getAllBlogs.length > 0 && (
+      {dataBlog && dataBlog.length > 0 && (
         <div className="mt-16 md:mt-20" id="blogs">
           <section className="border-b border-neutral-800 pb-6 border-dashed">
             <div className="font-bold flex gap-2 items-center">
@@ -29,7 +30,7 @@ export const BlogSection = async () => {
             </div>
           </section>
           <div className='md:grid md:grid-cols-2'>
-            {getAllBlogs.map((res) => {
+            {dataBlog.map((res) => {
               return (
                 <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
                   <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">

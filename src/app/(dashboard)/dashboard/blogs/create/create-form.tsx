@@ -1,34 +1,36 @@
 "use client";
-import { ActionButton } from '@/components/atoms/button';
-import { InputWithLabel } from '@/components/atoms/input-with-label';
+
+import { useState, useActionState, startTransition, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname, redirect } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+
+import { ActionButton } from "@/components/atoms/button";
+import { InputWithLabel } from "@/components/atoms/input-with-label";
 const Editor = dynamic(() => import("@/components/template/editor/editor"), { ssr: false });
-import { useState } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useDebouncedCallback } from 'use-debounce';
 
-import { CreateBlog } from '@/actions/blogs-action';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
-import { useFormStatus } from 'react-dom';
+import { CreateBlog } from "@/actions/blogs-action";
+import { toast } from "react-toastify";
 
-interface getTagProps {
+interface TagsProps {
   id: number;
   tag: string;
+  deletedAt: null | Date;
 }
-interface getTechProps {
+
+interface TechProps {
   id: number;
-  images: string;
   tech: string;
+  images: string;
 }
 
-export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; getTech: getTechProps[] }) => {
-  const [content, setContent] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [image, setImage] = useState<File | null>(null); // Untuk menyimpan file gambar
-  const [selectedTags, setSelectedTags] = useState<getTagProps[]>([]);
-  const [selectedTech, setSelectedTech] = useState<getTechProps[]>([]);
-
+interface AllProps {
+  techData: TechProps[];
+  tagData: TagsProps[];
+}
+export const BlogCreateForm = ({ tagData, techData }: AllProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -45,11 +47,11 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
   }, 300);
 
   const handleTagSearch = (query: string) => {
-    return getTag.filter((tag) => tag.tag.toLowerCase().includes(query.toLowerCase()));
+    return tagData.filter((tag) => tag.tag.toLowerCase().includes(query.toLowerCase()));
   };
 
   const handleTechSearch = (query: string) => {
-    return getTech.filter((tech) => tech.tech.toLowerCase().includes(query.toLowerCase()));
+    return techData.filter((tech) => tech.tech.toLowerCase().includes(query.toLowerCase()));
   };
 
   const handleDeleteTag = (id: number) => {
@@ -60,13 +62,22 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
     setSelectedTech(selectedTech.filter((tech) => tech.id !== id));
   };
 
-  const { pending } = useFormStatus();
+  const [state, action, isPending] = useActionState(CreateBlog, null)
+
+  const [content, setContent] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [image, setImage] = useState<File | null>(null);
+  const [selectedTags, setSelectedTags] = useState<TagsProps[]>([]);
+  const [selectedTech, setSelectedTech] = useState<TechProps[]>([]);
+
   const handleSubmit = () => {
     const formData = new FormData();
-    if (image) formData.append("images", image); // Masukkan file gambar dari state
-    formData.append("title", title); // Masukkan title dari state
-    formData.append("description", description); // Masukkan description dari state
+
+    formData.append("title", title);
+    formData.append("description", description);
     formData.append("content", content);
+    if (image) formData.append("images", image);
 
     selectedTags.forEach((tag) => {
       formData.append("tags", String(tag.id));
@@ -77,8 +88,26 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
     });
 
 
-    CreateBlog(formData)
+    startTransition(() => {
+      action(formData);
+    })
+
   };
+
+  useEffect(() => {
+    if(state?.status == 201) {
+      toast.success(state.message)
+      redirect('/dashboard/blogs')
+    }
+    if(state?.status == 400) {
+      toast.error(state.message)
+    }
+    if(state?.status == 500) {
+      toast.error(state.message)
+    }
+
+  }, [state?.timeStamp])
+
 
   return (
     <form className="space-y-4 mx-auto" onSubmit={(e) => e.preventDefault()}>
@@ -103,7 +132,7 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
           name="title"
           id="title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)} // Simpan nilai ke state
+          onChange={(e) => setTitle(e.target.value)} 
         />
         <InputWithLabel
           required
@@ -112,7 +141,7 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
           name="description"
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)} // Simpan nilai ke state
+          onChange={(e) => setDescription(e.target.value)}
         />
       </div>
 
@@ -198,9 +227,9 @@ export const BlogCreateForm = ({ getTag, getTech }: { getTag: getTagProps[]; get
 
       <ActionButton
         type="submit"
-        disabled={title == "" || description == "" || content == "" || !image || pending}
+        disabled={title == "" || description == "" || content == "" || !image || isPending}
         className="bg-blue-500 hover:bg-blue-700 py-2 w-full"
-        onClick={handleSubmit} // Panggil handleSubmit saat klik
+        onClick={handleSubmit}
       >
         Create
       </ActionButton>

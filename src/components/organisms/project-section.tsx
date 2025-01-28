@@ -5,10 +5,11 @@ import { formatDate } from "@/lib/format-date"
 import { FaAngleRight, FaBloggerB } from "react-icons/fa"
 
 export const ProjectSection = async () => {
-  const GetAllProject = await GetNewProject(2)
+  const getProject = await GetNewProject(2)
+  const dataProject = getProject.data
   return (
     <>
-      {GetAllProject.length > 0 && (
+      {dataProject && dataProject?.length > 0 && (
         <div className="mt-16 md:mt-20" id="blogs">
           <section className="border-b border-neutral-800 pb-6 border-dashed">
             <div className="font-bold flex gap-2 items-center">
@@ -20,7 +21,7 @@ export const ProjectSection = async () => {
             </div>
           </section>
           <div className='md:grid md:grid-cols-2'>
-            {GetAllProject.map((res) => {
+            {dataProject.map((res) => {
               return (
                 <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
                   <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">

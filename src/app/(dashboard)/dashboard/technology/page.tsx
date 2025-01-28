@@ -4,10 +4,8 @@ import React from 'react'
 import Search from '@/components/organisms/search'
 import Pagination from '@/components/organisms/pagination'
 import { Breadcrumb } from '@/components/atoms/bread-crumb'
-import { ActionButton } from '@/components/atoms/button'
+import { ActionButton, DeleteButton } from '@/components/atoms/button'
 
-// Icons
-import { BiTrash } from 'react-icons/bi'
 
 // Actions
 import { DeleteUTechnologyByID, GetAllTechnology, GetTechnologyByCount } from '@/actions/technology-action'
@@ -25,7 +23,8 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
 
   const totalCount = await GetTechnologyByCount(defaultQuery)
 
-  const getTech = await GetAllTechnology({ query: defaultQuery, page: defaultPages })
+  const fetchTech = await GetAllTechnology({ query: defaultQuery, page: defaultPages })
+  const techData = fetchTech.data
   return (
     <>
       <Breadcrumb />
@@ -44,20 +43,14 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
           </tr>
         </thead>
         <tbody>
-          {getTech.map((tech) => {
+          {techData && techData.map((tech) => {
             return (
               <tr key={tech.id} className="bg-neutral-800 border-b">
                 <td className="py-3 px-6">{tech.id}</td>
                 <td className="py-3 px-6">{tech.tech}</td>
                 <td className="py-3 px-6"><ActionButton className='basic-link' to={tech.images || ""}>{tech.images ? "Tech Images" : "Null"}</ActionButton>  </td>
                 <td className="flex justify-center gap-1 py-3">
-                  <form action={DeleteUTechnologyByID}>
-                    <input type="text" name="id" defaultValue={tech.id.toString()} hidden />
-                    <ActionButton
-                      type='submit'
-                      className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-300"
-                      leftIcon={<BiTrash className='text-xl' />} />
-                  </form>
+                  <DeleteButton id={tech.id.toString()} actions={DeleteUTechnologyByID} />
                 </td>
               </tr>
             )

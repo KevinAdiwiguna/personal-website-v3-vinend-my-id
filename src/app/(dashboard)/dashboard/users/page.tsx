@@ -1,13 +1,12 @@
 import React from 'react'
 
 // Components
-import Search from '@/components/organisms/search'
-import Pagination from '@/components/organisms/pagination'
 import { Breadcrumb } from '@/components/atoms/bread-crumb'
 import { ActionButton } from '@/components/atoms/button'
+import { DeleteButton } from '@/components/atoms/button'
+import Search from '@/components/organisms/search'
+import Pagination from '@/components/organisms/pagination'
 
-// Icons
-import { BiTrash } from 'react-icons/bi'
 
 // lib
 import { formatDate } from '@/lib/format-date'
@@ -28,7 +27,10 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
 
   const totalCount = await GetUserByCount(defaultQuery)
 
-  const getUser = await GetAllUser({ query: defaultQuery, page: defaultPages })
+  const fetchUser = await GetAllUser({ query: defaultQuery, page: defaultPages })
+
+  const getUserData = fetchUser.data
+
   return (
     <>
       <Breadcrumb />
@@ -48,7 +50,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
           </tr>
         </thead>
         <tbody>
-          {getUser.map((user) => {
+          {getUserData && getUserData.map((user) => {
             return (
               <tr key={user.id} className="bg-neutral-800 border-b">
                 <td className="py-3 px-6">{user.id}</td>
@@ -57,13 +59,7 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
                 <td className="py-3 px-6"><ActionButton className='basic-link' to={user.image || ""}>{user.image ? "Profile Picture" : "Null"}</ActionButton>  </td>
                 <td className="py-3 px-6">{formatDate(user.updatedAt.toString())}</td>
                 <td className="flex justify-center gap-1 py-3">
-                  <form action={DeleteUserByUUID}>
-                    <input type="text" name="id" defaultValue={user.id.toString()} hidden />
-                    <ActionButton
-                      type='submit'
-                      className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-300"
-                      leftIcon={<BiTrash className='text-xl' />} />
-                  </form>
+                <DeleteButton id={user.id.toString()} actions={DeleteUserByUUID}/>
                 </td>
               </tr>
             )

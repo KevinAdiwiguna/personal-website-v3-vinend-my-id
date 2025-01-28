@@ -1,19 +1,16 @@
-"use server"
-import { db } from "@/db/db";
-import { auth } from "@/lib/auth";
-import cloudinary from "@/lib/cloudinary"
+"use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { db } from "@/db/db";
 
-interface GetAllProjectProps {
-  query: string
-  page: number
-}
+import { auth } from "@/lib/auth";
 
-const ITEMS_PER_PAGE = 15
+import cloudinary from "@/lib/cloudinary";
 
-export const GetAllProject = async ({ query, page }: GetAllProjectProps) => {
+import { ITEMS_PER_PAGE, QueryParamsProps, ResponseState } from "@/types/globals";
+
+export const GetAllProject = async ({ query, page }: QueryParamsProps) => {
   const offest = (page - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -45,7 +42,7 @@ export const GetAllProject = async ({ query, page }: GetAllProjectProps) => {
                 mode: "insensitive",
               },
             },
-          }
+          },
         ],
       },
       select: {
@@ -85,9 +82,18 @@ export const GetAllProject = async ({ query, page }: GetAllProjectProps) => {
         },
       },
     });
-    return getBlog || []
+    return {
+      status: 200,
+      message: "Project fetched successfully",
+      data: getBlog || [],
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    throw new Error(`Failed to fetch blog data ${error}`);
+    return {
+      status: 500,
+      message: `Failed to fetch project ${error}`,
+      timeStamp: new Date(),
+    };
   }
 };
 
@@ -136,11 +142,20 @@ export const GetNewProject = async (limit: number) => {
         },
       },
     });
-    return getBlog || []
+    return {
+      status: 200,
+      message: "Project fetched successfully",
+      data: getBlog || [],
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    throw new Error(`Failed to fetch blog data ${error}`);
+    return {
+      status: 500,
+      message: `Failed to fetch project ${error}`,
+      timeStamp: new Date(),
+    };
   }
-}
+};
 
 export const GetProjectByCount = async (query: string) => {
   const user = await db.project.count({
@@ -169,16 +184,30 @@ export const GetProjectByCount = async (query: string) => {
               mode: "insensitive",
             },
           },
-        }
+        },
       ],
-    }
-  })
+    },
+  });
   const totalPages = Math.ceil(Number(user) / ITEMS_PER_PAGE);
   return totalPages;
-}
+};
 
 export const GetProjectID = async (id: string) => {
+  if(!id || isNaN(parseInt(id))) {
+    redirect("/404");
+  }
   try {
+    const checkProject = await db.project.findUnique({
+      where: {
+        id: parseInt(id)
+      }
+    })
+
+    if(!checkProject) {
+      redirect('/404');
+    }
+
+    
     await db.project.update({
       where: {
         id: parseInt(id),
@@ -189,6 +218,7 @@ export const GetProjectID = async (id: string) => {
         },
       },
     });
+
     const getBlog = await db.project.findUnique({
       where: {
         id: parseInt(id),
@@ -225,7 +255,7 @@ export const GetProjectID = async (id: string) => {
               select: {
                 id: true,
                 tech: true,
-                images: true
+                images: true,
               },
             },
           },
@@ -237,22 +267,27 @@ export const GetProjectID = async (id: string) => {
       redirect("/404");
     }
 
-    return getBlog;
+    return {
+      status: 200,
+      message: "Project fetched successfully",
+      data: getBlog,
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    console.error("Error fetching blog:", error);
-    throw new Error(`Failed to fetch blog: ${error}`);
+    return {
+      status: 500,
+      message: `Failed to fetch project ${error}`,
+      timeStamp: new Date(),
+    };
   }
-}
+};
 
-export const CreateProject = async (formData: FormData) => {
-  // Autentikasi pengguna
+export const CreateProject = async (previousState: unknown, formData: FormData): Promise<ResponseState> => {
   const session = await auth();
   if (!session?.user?.email) {
     redirect("/auth/signin");
-    return;
   }
 
-  // Validasi role pengguna
   const checkUser = await db.user.findUnique({
     where: {
       email: session.user.email,
@@ -260,10 +295,9 @@ export const CreateProject = async (formData: FormData) => {
   });
 
   if (!checkUser || (checkUser.role !== "ADMIN" && checkUser.role !== "EDITOR")) {
-    throw new Error("You are not authorized to create a blog");
+    redirect("/auth/signin");
   }
 
-  // Ekstraksi data dari formData
   const image = formData.get("images") as File | null;
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
@@ -271,45 +305,60 @@ export const CreateProject = async (formData: FormData) => {
   const tags = formData.getAll("tags") as string[];
   const technologies = formData.getAll("tech") as string[];
 
-  // Validasi data
-  if (!image || !(image instanceof File)) {
-    throw new Error("Invalid or missing image file in formData.");
+  if (!image) {
+    return {
+      status: 400,
+      message: "Invalid image data type",
+      timeStamp: new Date(),
+    };
   }
 
   if (!title || !description || !content) {
-    throw new Error("Invalid blog data. Title, description, and content are required.");
+    return {
+      status: 400,
+      message: "Invalid title, description, or content",
+      timeStamp: new Date(),
+    };
   }
 
   if (!tags.every((tag) => !isNaN(parseInt(tag, 10)))) {
-    throw new Error("Invalid tags format.");
+    return {
+      status: 400,
+      message: "Invalid tags format",
+      timeStamp: new Date(),
+    };
   }
 
   if (!technologies.every((tech) => !isNaN(parseInt(tech, 10)))) {
-    throw new Error("Invalid technologies format.");
+    return {
+      status: 400,
+      message: "Invalid technologies format",
+      timeStamp: new Date(),
+    };
   }
 
   const parsedTags = tags.map((tag) => parseInt(tag, 10));
   const parsedTechnologies = technologies.map((tech) => parseInt(tech, 10));
 
   try {
-    // Upload gambar ke Cloudinary
     const arrayBuffer = await image.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
     const imageUrl = await new Promise<string>((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { folder: "project", allowed_formats: ["heic", "gif", "jpg", "png", "webp", "mp4"] },
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result?.url || "");
+      cloudinary.uploader
+        .upload_stream(
+          { folder: "project", allowed_formats: ["heic", "gif", "jpg", "png", "webp", "mp4", "svg"] },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result?.url || "");
+            }
           }
-        }
-      ).end(buffer);
+        )
+        .end(buffer);
     });
 
-    // Simpan blog ke database
     const project = await db.project.create({
       data: {
         title: title,
@@ -321,7 +370,6 @@ export const CreateProject = async (formData: FormData) => {
       },
     });
 
-    // Simpan relasi tags ke database
     if (parsedTags.length > 0) {
       await db.tagRelation.createMany({
         data: parsedTags.map((tagId) => ({
@@ -331,7 +379,6 @@ export const CreateProject = async (formData: FormData) => {
       });
     }
 
-    // Simpan relasi teknologi ke database
     if (parsedTechnologies.length > 0) {
       await db.technologyRelation.createMany({
         data: parsedTechnologies.map((techId) => ({
@@ -341,37 +388,59 @@ export const CreateProject = async (formData: FormData) => {
       });
     }
 
-    revalidatePath("/dashboard/projects");
+    return {
+      status: 201,
+      message: "Project created successfully",
+      timeStamp: new Date(),
+    };
   } catch (error) {
-    console.error("Error creating blog:", error);
-    throw new Error(`Failed to create blog: ${error}`);
+    return {
+      status: 500,
+      message: `Failed to create project ${error}`,
+      timeStamp: new Date(),
+    };
   } finally {
-    redirect("/dashboard/projects");
+    revalidatePath("/dashboard/projects");
   }
 };
 
 export const CheckProjectCount = async () => {
   const blogCount = await db.project.count({
-    take: 3
-  })
-  return blogCount
-}
+    take: 3,
+  });
+  return blogCount;
+};
 
-export const DeleteProject = async (formData: FormData) => {
-  const id = formData.get('id') as string
+export const DeleteProject = async (previousState: unknown, formData: FormData): Promise<ResponseState> => {
+  const id = formData.get("id") as string;
+
+  if (!id || isNaN(parseInt(id, 10))) {
+    return {
+      status: 400,
+      message: "Invalid project id",
+      timeStamp: new Date(),
+    }
+  }
 
   try {
-    if (!id) {
-      throw new Error("Invalid blog id")
-    }
     await db.project.delete({
       where: {
         id: parseInt(id),
-      }
-    })
-    revalidatePath("/dashboard/projects");
+      },
+    });
+    
+    return {
+      status: 200,
+      message: "Project deleted successfully",
+      timeStamp: new Date(),
+    }
   } catch (error) {
-    console.error("Error deleting projects:", error);
-    throw new Error(`Failed to delete projects: ${error}`);
+    return {
+      status: 500,
+      message: `Failed to delete project ${error}`,
+      timeStamp: new Date(),
+    };
+  } finally {
+    revalidatePath("/dashboard/projects");
   }
-}
+};

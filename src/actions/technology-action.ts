@@ -98,7 +98,7 @@ export const CreateTechnology = async (previousState: unknown, formData: FormDat
   const image = formData.get("images") as File;
   const tech = formData.get("tech") as string;
 
-  if (!image || !(image instanceof File)) {
+  if (!image) {
     return {
       status: 400,
       message: "Invalid or missing image file in formData.",
@@ -134,7 +134,7 @@ export const CreateTechnology = async (previousState: unknown, formData: FormDat
     });
 
     return {
-      status: 200,
+      status: 201,
       message: "Technology created successfully",
       timeStamp: new Date(),
     };
