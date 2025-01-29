@@ -110,11 +110,7 @@ export const DeleteButton = ({
       console.log("gugu gaga gugug gaga");
       toast.error(state.message);
     }
-  }, [state?.timeStamp]);
-
-
-  console.log("state => ", state)
-  console.log("isPending => ", isPending)
+  }, [state?.status, state?.message, state?.timeStamp]);
 
   return (
     <form action={action}>

@@ -97,17 +97,14 @@ export const ProjectCreateForm = ({ tagData, techData }: AllProps) => {
 
 
   useEffect(() => {
-    if(state?.status == 201) {
-      toast.success(state.message)
-      redirect('/dashboard/projects')
+    if (state?.status === 201) {
+      toast.success(state.message);
+      redirect('/dashboard/projects');
     }
-    if(state?.status == 400) {
-      toast.error(state.message)
+    if (state?.status === 400 || state?.status === 500) {
+      toast.error(state.message);
     }
-    if(state?.status == 500) {
-      toast.error(state.message)
-    }
-  }, [state?.timeStamp])
+}, [state?.status, state?.message, state?.timeStamp]);
 
   return (
     <form className="space-y-4 mx-auto" onSubmit={(e) => e.preventDefault()}>

@@ -1,12 +1,12 @@
 import React from "react";
-import Pagination from "@/components/organisms/pagination";
-import { Breadcrumb } from "@/components/atoms/bread-crumb";
+
 import { ActionButton, DeleteButton } from "@/components/atoms/button";
-
-import { BiTrash } from "react-icons/bi";
-
+import { Breadcrumb } from "@/components/atoms/bread-crumb";
+import Pagination from "@/components/organisms/pagination";
 import Search from "@/components/organisms/search";
+
 import { GetAllBlogs, GetBlogsByCount, DeleteBlog } from "@/actions/blogs-action";
+
 import { formatDate } from "@/lib/format-date";
 
 interface searchParamsProps {
@@ -19,10 +19,8 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
   const defaultQuery = query || "";
   const defaultPages = parseInt(page || "1");
 
-  // Untuk Pagination
   const totalCount = await GetBlogsByCount(defaultQuery);
 
-  // Untuk Get data user
   const fetchBlogs = await GetAllBlogs({ query: defaultQuery, page: defaultPages });
   const blogData = fetchBlogs.data
 
