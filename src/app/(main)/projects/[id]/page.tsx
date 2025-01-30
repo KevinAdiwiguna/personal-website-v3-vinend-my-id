@@ -1,35 +1,77 @@
-import React from 'react'
-import Image from 'next/image'
-import { redirect } from 'next/navigation';
-import parse from 'html-react-parser';
+import React from "react";
+import Image from "next/image";
+import { redirect } from "next/navigation";
+import parse from "html-react-parser";
 import "@/styles/blocknotes-styles.css";
 
-import { Breadcrumb } from '@/components/atoms/bread-crumb';
+import { Breadcrumb } from "@/components/atoms/bread-crumb";
 
-import { GetProjectID } from '@/actions/project-action'
+import { GetProjectID } from "@/actions/project-action";
 
-import { formatDate } from '@/lib/format-date'
+import { formatDate } from "@/lib/format-date";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const fetchProjectById = await GetProjectID(id.toString());
+  const projectData = fetchProjectById.data;
+
+  if (!projectData) {
+    return {
+      title: "Project Not Found",
+      description: "The requested project could not be found.",
+    };
+  }
+
+  return {
+    title: projectData.title,
+    description: projectData.description,
+    openGraph: {
+      title: projectData.title,
+      description: projectData.description,
+      images: [
+        {
+          url: projectData.thumbnail,
+          width: 800,
+          height: 600,
+          alt: projectData.title,
+        },
+      ],
+    },
+  };
+}
 
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = (await params).id
-  const fetchProjectById = await GetProjectID(id.toString())
-  const projectData = fetchProjectById.data
+  const id = (await params).id;
+  const fetchProjectById = await GetProjectID(id.toString());
+  const projectData = fetchProjectById.data;
 
-  if(!projectData) {
-    redirect('/404')
+  if (!projectData) {
+    redirect("/404");
   }
   return (
     <div>
       <Breadcrumb />
-      <div className='w-full h-fit mx-auto flex justify-center items-center mt-8'>
-        <Image src={projectData.thumbnail} alt={projectData.title} width={1920 / 3} height={1080 / 3} className='block' />
+      <div className="w-full h-fit mx-auto flex justify-center items-center mt-8">
+        <Image
+          src={projectData.thumbnail}
+          alt={projectData.title}
+          width={1920 / 3}
+          height={1080 / 3}
+          className="block"
+        />
       </div>
-      <div className='flex justify-around items-center mt-8'>
-        <div className='flex gap-x-2 items-center'>
-          <Image src={projectData.user.image || "https://cdn.fakercloud.com/avatars"} alt={projectData.user.name || projectData.user.email} width={50} height={50} className='rounded-full' />
+      <div className="flex justify-around items-center mt-8">
+        <div className="flex gap-x-2 items-center">
+          <Image
+            src={projectData.user.image || "https://cdn.fakercloud.com/avatars"}
+            alt={projectData.user.name || projectData.user.email}
+            width={50}
+            height={50}
+            className="rounded-full"
+          />
           <div>
-            <p className='text-lg'>{projectData.user.name}</p>
-            <span className='text-sm text-neutral-400'>{formatDate(projectData.updatedAt.toString())}</span>
+            <p className="text-lg">{projectData.user.name}</p>
+            <span className="text-sm text-neutral-400">{formatDate(projectData.updatedAt.toString())}</span>
           </div>
         </div>
         <div className="flex justify-between gap-4">
@@ -50,42 +92,42 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
       </div>
 
-      <div className='mt-24'>
-        <h1 className='text-3xl font-bold mt-8 mb-2'>{projectData.title}</h1>
-        <p className='text-xl mb-16'>{projectData.description}</p>
-        <div className='prose dark:prose-invert lg:prose-xl'>
-          {parse(projectData?.content || '')}
-        </div>
+      <div className="mt-24">
+        <h1 className="text-3xl font-bold mt-8 mb-2">{projectData.title}</h1>
+        <p className="text-xl mb-16">{projectData.description}</p>
+        <div className="prose dark:prose-invert lg:prose-xl">{parse(projectData?.content || "")}</div>
       </div>
 
-      <div className='flex max-w-lg gap-x-4 gap-y-2'>
-        {projectData.tags.length > 0 && projectData.tags.map((tag) => {
-          return (
-            <div
-              key={tag.tag?.id}
-              className="px-2.5 py-1 rounded-full font-mono text-base dark:bg-neutral-700/50 dark:text-neutral-400 text-white bg-neutral-900/50 w-fit">
-              <span className="font-semibold mr-1">#</span>
-              {tag?.tag?.tag}
-            </div>
-          )
-        }
-        )}
+      <div className="flex max-w-lg gap-x-4 gap-y-2">
+        {projectData.tags.length > 0 &&
+          projectData.tags.map((tag) => {
+            return (
+              <div
+                key={tag.tag?.id}
+                className="px-2.5 py-1 rounded-full font-mono text-base dark:bg-neutral-700/50 dark:text-neutral-400 text-white bg-neutral-900/50 w-fit"
+              >
+                <span className="font-semibold mr-1">#</span>
+                {tag?.tag?.tag}
+              </div>
+            );
+          })}
       </div>
-      <div className='flex max-w-lg gap-x-4 gap-y-2'>
-        {projectData.technologies.length > 0 && projectData.technologies.map((res) => {
-          return (
-            <div
-              key={res.technology?.id}
-              className="px-2.5 py-1 rounded-full font-mono text-base dark:bg-neutral-700/50 dark:text-neutral-400 text-white bg-neutral-900/50 w-fit">
-              <span className="font-semibold mr-1">#</span>
-              {res?.technology?.tech}
-            </div>
-          )
-        }
-        )}
+      <div className="flex max-w-lg gap-x-4 gap-y-2">
+        {projectData.technologies.length > 0 &&
+          projectData.technologies.map((res) => {
+            return (
+              <div
+                key={res.technology?.id}
+                className="px-2.5 py-1 rounded-full font-mono text-base dark:bg-neutral-700/50 dark:text-neutral-400 text-white bg-neutral-900/50 w-fit"
+              >
+                <span className="font-semibold mr-1">#</span>
+                {res?.technology?.tech}
+              </div>
+            );
+          })}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;

@@ -4,8 +4,13 @@ import { GetAllProject, } from '@/actions/project-action'
 import Image from 'next/image'
 import { formatDate } from '@/lib/format-date'
 import { ActionButton } from '@/components/atoms/button'
+import { Metadata } from 'next'
 
-
+export const metadata: Metadata = {
+  title: "Projects - Kevin Adiwiguna",
+  description:
+    "Kevin Adiwiguna is a Fullstack Developer with 3+ years of professional experience. Specializing in creating innovative solutions using modern technologies. Proven track record of delivering high-quality.",  
+}
 
 interface searchParamsProps {
   page?: string

@@ -11,6 +11,36 @@ import { formatDate } from '@/lib/format-date'
 
 import { GetBlogByID } from '@/actions/blogs-action'
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const fetchBlogById = await GetBlogByID(id.toString());
+  const blogData = fetchBlogById.data;
+
+  if (!blogData) {
+    return {
+      title: "Project Not Found",
+      description: "The requested project could not be found.",
+    };
+  }
+
+  return {
+    title: blogData.title,
+    description: blogData.description,
+    openGraph: {
+      title: blogData.title,
+      description: blogData.description,
+      images: [
+        {
+          url: blogData.images,
+          width: 800,
+          height: 600,
+          alt: blogData.title,
+        },
+      ],
+    },
+  };
+}
+
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id
   const fetchBlogById = await GetBlogByID(id.toString())
