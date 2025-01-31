@@ -13,7 +13,7 @@ import { formatDate } from "@/lib/format-date";
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const fetchProjectById = await GetProjectID(id.toString());
-  const projectData = fetchProjectById.data;
+  const projectData = fetchProjectById?.data;
 
   if (!projectData) {
     return {
