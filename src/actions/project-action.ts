@@ -17,6 +17,9 @@ export const GetAllProject = async ({ query, page }: QueryParamsProps) => {
     const getBlog = await db.project.findMany({
       skip: offest,
       take: ITEMS_PER_PAGE,
+      orderBy: {
+        updatedAt: "asc", 
+      },
       where: {
         OR: [
           {
