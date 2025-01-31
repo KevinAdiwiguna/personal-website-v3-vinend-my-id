@@ -23,7 +23,7 @@ export const ProjectSection = async () => {
           <div className='md:grid md:grid-cols-2'>
             {dataProject.map((res) => {
               return (
-                <ActionButton key={res.id} to={`/blogs/${res.id.toString()}`}>
+                <ActionButton key={res.id} to={`/projects/${res.id.toString()}`}>
                   <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">
                     <div className="duration-500 relative rounded-xl" style={{ height: 400, overflow: "hidden" }}>
                       <div style={{ height: 400, overflow: "hidden" }}>
