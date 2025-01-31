@@ -18,7 +18,7 @@ export const GetAllProject = async ({ query, page }: QueryParamsProps) => {
       skip: offest,
       take: ITEMS_PER_PAGE,
       orderBy: {
-        updatedAt: "asc", 
+        updatedAt: "desc", 
       },
       where: {
         OR: [
