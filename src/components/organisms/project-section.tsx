@@ -23,7 +23,7 @@ export const ProjectSection = async () => {
           <div className='md:grid md:grid-cols-2'>
             {dataProject.map((res) => {
               return (
-                <ActionButton key={res.id} to={`/project/${res.id.toString()}`}>
+                <ActionButton key={res.id} to={`/projects/${res.id.toString()}`}>
                   <div className="mb-5 bg-[#1E1E1E] rounded-xl transition-all duration-300 shadow-sm group relative flex flex-col border dark:border-neutral-800 h-[400px] w-full">
                     <div className="duration-500 relative rounded-xl" style={{ height: 400, overflow: "hidden" }}>
                       <div style={{ height: 400, overflow: "hidden" }}>
@@ -117,7 +117,7 @@ export const ProjectSection = async () => {
               )
             })}
           </div>
-          <ActionButton to="/project" className="font-semibold flex items-center gap-0 px-0 pr-2 justify-center my-0 py-0 hover:underline duration-300" rightIcon={<FaAngleRight />}><span>More Blogs</span></ActionButton>
+          <ActionButton to="/projects" className="font-semibold flex items-center gap-0 px-0 pr-2 justify-center my-0 py-0 hover:underline duration-300" rightIcon={<FaAngleRight />}><span>More Blogs</span></ActionButton>
         </div>
       )}
     </>
