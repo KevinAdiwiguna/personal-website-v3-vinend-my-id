@@ -1,10 +1,10 @@
 "use client"
 import { ActionButton } from "../atoms/button"
-import { FaMoon, FaSun } from "react-icons/fa"
+// import { FaMoon, FaSun } from "react-icons/fa"
 
 // Hooks
 // Client Hooks
-import { useChangeTheme } from '@/hooks/useChangeTheme'
+// import { useChangeTheme } from '@/hooks/use-change-themes'
 import { cn } from "@/lib/cn"
 
 interface NavigationbarProps {
@@ -16,7 +16,7 @@ interface NavigationbarProps {
   className?: string
 }
 export const NavigationBar = ({ session, className }: NavigationbarProps) => {
-  const { isDark, toggleTheme } = useChangeTheme()
+  // const { isDark, toggleTheme } = useChangeTheme()
 
   return (
     <nav className={cn("px-6 flex justify-between items-center border-b-2 border-neutral-700 sticky top-0 w-full z-40 backdrop-blur", className)}>
@@ -53,9 +53,9 @@ export const NavigationBar = ({ session, className }: NavigationbarProps) => {
             Home
           </ActionButton>
         )}
-        <ActionButton onClick={toggleTheme} className="cursor-pointer rounded-md p-3 navigation-button">
+        {/* <ActionButton onClick={toggleTheme} className="cursor-pointer rounded-md p-3 navigation-button">
           {isDark ? <FaSun /> : <FaMoon />}
-        </ActionButton>
+        </ActionButton> */}
       </div>
     </nav>
   )
