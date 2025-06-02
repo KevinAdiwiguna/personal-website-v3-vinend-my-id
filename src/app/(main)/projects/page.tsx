@@ -7,10 +7,9 @@ import { ActionButton } from '@/components/atoms/button'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Projects - Kevin Adiwiguna",
-  description:
-    "Kevin Adiwiguna is a Fullstack Developer with 3+ years of professional experience. Specializing in creating innovative solutions using modern technologies. Proven track record of delivering high-quality.",  
-}
+	title: "Projects - Kevin Adiwiguna",
+	description: "Kevin Adiwiguna is a Fullstack Developer with 3+ years of professional experience. Specializing in creating innovative solutions using modern technologies. Proven track record of delivering high-quality.",
+};
 
 interface searchParamsProps {
   page?: string
@@ -137,4 +136,3 @@ const page = async ({ searchParams }: { searchParams: Promise<searchParamsProps>
 }
 
 export default page
-

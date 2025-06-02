@@ -35,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: user.email! },
           select: { role: true },
         })
-        token.role = dbUser?.role  
+        token.role = dbUser?.role;
       }
       return token
     },
