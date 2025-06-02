@@ -426,7 +426,7 @@ export const DeleteBlog = async (previousState: unknown, formData: FormData): Pr
         id: parseInt(id),
       },
     });
-    
+
     return {
       status: 200,
       message: "Blog deleted successfully",
